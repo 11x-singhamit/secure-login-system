@@ -155,8 +155,10 @@ This project was developed for educational purposes as part of the Programming a
 
 ## Author
 
-Name: Amit Singh
-
-
+Amit Singh  
+Ethical Hacking and Cyber Security Student 
 
 ---
+## License
+
+This project is for educational purposes only.
