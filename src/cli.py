@@ -5,7 +5,7 @@ from src.auth import AuthSystem
 from src.detector import AttackDetector
 
 
-# Create same objects as GUI
+
 auth = AuthSystem()
 detector = AttackDetector()
 

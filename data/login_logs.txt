@@ -71,3 +71,17 @@
 1771522280.0129497,admin,FAILED
 1771522280.8043287,admin,FAILED
 1771522282.04193,admin,FAILED
+[2026-02-20 23:17:34] admin: Login attempt detected
+[2026-02-20 23:18:20] admin: Login attempt detected
+[2026-02-20 23:23:46] admin login attempt detected
+[2026-02-20 23:23:55] admin logged in successfully
+[2026-02-20 23:27:28] admin login attempt detected
+[2026-02-20 23:27:39] admin logged in successfully
+[2026-02-20 23:36:04] admin login attempt detected
+[2026-02-20 23:36:14] admin logged in successfully
+[2026-02-20 23:37:04] admin login attempt detected
+[2026-02-20 23:37:05] admin login attempt detected
+[2026-02-20 23:37:05] admin login attempt detected
+[2026-02-20 23:37:06] admin login attempt detected
+[2026-02-20 23:37:09] admin login attempt detected
+[2026-02-20 23:37:18] admin logged in successfully

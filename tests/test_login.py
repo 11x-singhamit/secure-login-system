@@ -1,7 +1,7 @@
 import sys
 import os
 
-# Fix Python import path
+
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 
 from src.auth import AuthSystem
@@ -10,9 +10,9 @@ from src.utils import hash_password, generate_token, generate_otp
 from src.security import add_user, verify_user
 
 
-# =========================
+
 # SETUP TEST USERS
-# =========================
+
 
 TEST_USER_FILE = "data/test_users.txt"
 
@@ -27,9 +27,9 @@ def setup_users_file():
         f.write(f"user1:{hash_password('123456')}\n")
 
 
-# =========================
+
 # AUTH SYSTEM TESTS
-# =========================
+
 
 def test_successful_login():
 
@@ -66,9 +66,9 @@ def test_login_nonexistent_user():
     assert result == "FAILED"
 
 
-# =========================
+
 # OTP TESTS
-# =========================
+
 
 def test_otp_generation():
 
@@ -101,9 +101,9 @@ def test_wrong_otp():
     assert status == "FAILED"
 
 
-# =========================
+
 # TOKEN TESTS
-# =========================
+
 
 def test_token_generation():
 
@@ -113,9 +113,9 @@ def test_token_generation():
     assert isinstance(token, str)
 
 
-# =========================
+
 # ATTACK DETECTOR TESTS
-# =========================
+
 
 def test_bruteforce_lockout():
 
@@ -138,9 +138,9 @@ def test_risk_levels():
     assert detector.get_risk(6) == "CRITICAL"
 
 
-# =========================
+
 # LOCKOUT TEST
-# =========================
+
 
 def test_account_lockout():
 
@@ -153,9 +153,9 @@ def test_account_lockout():
     assert auth.is_locked() is True
 
 
-# =========================
+
 # PASSWORD HASH TEST
-# =========================
+
 
 def test_password_hash():
 
@@ -167,9 +167,9 @@ def test_password_hash():
     assert len(hashed) == 64
 
 
-# =========================
+
 # USER VERIFICATION TEST
-# =========================
+
 
 def test_verify_user():
 

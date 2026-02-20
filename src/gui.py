@@ -39,9 +39,38 @@ class SecurityConsole:
 
         self.root = root
 
+        # NEW: Initialize database
+        self.init_database()
+
         self.build_layout()
 
         self.update_clock()
+
+
+# =========================
+# DATABASE INITIALIZATION
+# =========================
+
+    def init_database(self):
+
+        try:
+
+            conn = sqlite3.connect("data/login_logs.db")
+
+            conn.execute("""
+            CREATE TABLE IF NOT EXISTS logs (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                message TEXT,
+                time TEXT
+            )
+            """)
+
+            conn.commit()
+            conn.close()
+
+        except Exception as e:
+
+            print("Database init error:", e)
 
 
 # =========================
@@ -65,10 +94,7 @@ class SecurityConsole:
         main.pack(pady=10)
 
 
-        # =====================
         # AUTH FRAME
-        # =====================
-
         auth_frame = tk.LabelFrame(
             main,
             text="User Authentication",
@@ -89,7 +115,6 @@ class SecurityConsole:
         self.password.grid(row=1, column=1)
 
 
-        # SAVE BUTTON REFERENCE
         self.auth_button = tk.Button(
             auth_frame,
             text="Authenticate",
@@ -108,7 +133,6 @@ class SecurityConsole:
         ).grid(row=3, column=0, columnspan=2, pady=5)
 
 
-        # Retry timer label in auth section
         self.auth_retry_label = tk.Label(
             auth_frame,
             text="",
@@ -119,10 +143,7 @@ class SecurityConsole:
         self.auth_retry_label.grid(row=4, column=0, columnspan=2, pady=5)
 
 
-        # =====================
         # STATUS FRAME
-        # =====================
-
         status_frame = tk.LabelFrame(
             main,
             text="Security Status",
@@ -172,10 +193,7 @@ class SecurityConsole:
         self.token_status.pack(anchor="w")
 
 
-        # =====================
         # LOG FRAME
-        # =====================
-
         log_frame = tk.LabelFrame(
             self.root,
             text="Security Audit Logs",
@@ -266,64 +284,75 @@ class SecurityConsole:
 
 
 # =========================
-# LOCK TIMER (UPDATED)
+# UPDATED LOG FUNCTION
+# =========================
+
+    def log(self, message):
+
+        now = time.strftime("%Y-%m-%d %H:%M:%S")
+
+        log_entry = f"[{now}] {message}\n"
+
+        self.log_box.insert("end", log_entry)
+        self.log_box.see("end")
+
+        # Save to database
+        try:
+
+            conn = sqlite3.connect("data/login_logs.db")
+
+            conn.execute(
+                "INSERT INTO logs (message, time) VALUES (?, ?)",
+                (message, now)
+            )
+
+            conn.commit()
+            conn.close()
+
+        except Exception as e:
+
+            print("Database log error:", e)
+
+
+        # Save to text file
+        try:
+
+            with open("data/login_logs.txt", "a") as f:
+
+                f.write(log_entry)
+
+        except Exception as e:
+
+            print("File log error:", e)
+
+
+# =========================
+# REMAINING FUNCTIONS UNCHANGED
 # =========================
 
     def update_lock_timer(self):
-
         remaining = auth.remaining_lock_time()
-
-        self.timer_status.config(
-            text=f"Retry available in: {remaining}s"
-        )
-
-        # Show in authentication section
-        self.auth_retry_label.config(
-            text=f"Login disabled. Retry in {remaining} seconds"
-        )
-
-        # Disable button
+        self.timer_status.config(text=f"Retry available in: {remaining}s")
+        self.auth_retry_label.config(text=f"Login disabled. Retry in {remaining} seconds")
         self.auth_button.config(state="disabled")
 
         if remaining > 0:
-
             self.root.after(1000, self.update_lock_timer)
-
         else:
-
-            # Reset
             self.lock_status.config(text="Account Lockout: None")
-
-            self.timer_status.config(
-                text="Retry available in: -"
-            )
-
+            self.timer_status.config(text="Retry available in: -")
             self.auth_retry_label.config(text="")
-
             self.auth_button.config(state="normal")
+            self.system_status.config(text="System Status: Idle", fg="green")
 
-            self.system_status.config(
-                text="System Status: Idle",
-                fg="green"
-            )
-
-
-# =========================
-# OTP POPUP
-# =========================
 
     def show_otp_popup(self, otp):
 
         popup = tk.Toplevel(self.root)
-
         popup.title("OTP Notification")
         popup.geometry("300x150")
 
-        tk.Label(
-            popup,
-            text="Security Verification",
-            font=("Segoe UI", 12, "bold")
-        ).pack(pady=10)
+        tk.Label(popup, text="Security Verification", font=("Segoe UI", 12, "bold")).pack(pady=10)
 
         tk.Label(
             popup,
@@ -332,16 +361,8 @@ class SecurityConsole:
             fg="blue"
         ).pack(pady=10)
 
-        tk.Button(
-            popup,
-            text="OK",
-            command=popup.destroy
-        ).pack()
+        tk.Button(popup, text="OK", command=popup.destroy).pack()
 
-
-# =========================
-# OTP VERIFY
-# =========================
 
     def verify_otp(self, username):
 
@@ -358,14 +379,9 @@ class SecurityConsole:
 
             if result == "SUCCESS":
 
-                self.system_status.config(
-                    text="System Status: Access Granted",
-                    fg="green"
-                )
+                self.system_status.config(text="System Status: Access Granted", fg="green")
 
-                self.token_status.config(
-                    text=f"Session Token: {token}"
-                )
+                self.token_status.config(text=f"Session Token: {token}")
 
                 self.log(f"{username} logged in successfully")
 
@@ -377,10 +393,6 @@ class SecurityConsole:
 
         tk.Button(win, text="Verify", command=verify).pack()
 
-
-# =========================
-# REGISTER USER
-# =========================
 
     def register_user(self):
 
@@ -405,10 +417,6 @@ class SecurityConsole:
         tk.Button(win, text="Register", command=save).pack()
 
 
-# =========================
-# ADMIN DASHBOARD
-# =========================
-
     def open_admin(self):
 
         win = tk.Toplevel(self.root)
@@ -418,38 +426,16 @@ class SecurityConsole:
 
         conn = sqlite3.connect("data/login_logs.db")
 
-        for row in conn.execute("SELECT * FROM logs ORDER BY time DESC"):
+        for row in conn.execute("SELECT * FROM logs ORDER BY id DESC"):
             text.insert("end", str(row) + "\n")
 
         conn.close()
 
 
-# =========================
-# LOG
-# =========================
-
-    def log(self, message):
-
-        now = time.strftime("%H:%M:%S")
-
-        self.log_box.insert(
-            "end",
-            f"[{now}] {message}\n"
-        )
-
-        self.log_box.see("end")
-
-
-# =========================
-# CLOCK
-# =========================
-
     def update_clock(self):
 
         now = time.strftime("%H:%M:%S")
 
-        self.root.title(
-            f"Secure Login System – Security Console ({now})"
-        )
+        self.root.title(f"Secure Login System – Security Console ({now})")
 
         self.root.after(1000, self.update_clock)
