@@ -220,7 +220,7 @@ class SecurityConsole:
             command=self.open_admin
         ).pack(pady=5)
 
-
+# =========================
 # =========================
 # AUTHENTICATION
 # =========================

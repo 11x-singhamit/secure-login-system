@@ -85,3 +85,5 @@
 [2026-02-20 23:37:06] admin login attempt detected
 [2026-02-20 23:37:09] admin login attempt detected
 [2026-02-20 23:37:18] admin logged in successfully
+[2026-02-21 18:26:30] New user registered: apple
+[2026-02-21 18:28:00] New user registered: logi
